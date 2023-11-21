@@ -1,2 +1,3 @@
 .pio
 .idea
+/src/arduino_secrets.h
