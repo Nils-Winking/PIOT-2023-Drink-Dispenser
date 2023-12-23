@@ -3,9 +3,9 @@
 //
 
 #include <Arduino.h>
-#include <Helpers.h>
-#include <NfcWrapper.h>
-#include <WifiWrapper.h>
+#include "Helpers.h"
+#include "NfcWrapper.h"
+#include "WifiWrapper.h"
 
 bool waiting_for_cup = true;
 
@@ -20,7 +20,7 @@ void setup() {
 void loop() {
     if (waiting_for_cup) {
         printColored("Insert Cup (Waiting for NFC tag)", ANSI::green);
-        if (nfcAdapter.tagPresent()) {
+        if (tagPresent()) {
             NfcTag tag = readAndPrintId();
             const bool onlineMode = isConnected();
             if (onlineMode) {

@@ -3,8 +3,9 @@
 //
 
 #include "NfcWrapper.h"
-#include <Helpers.h>
+#include "Helpers.h"
 
+#ifndef fakeNFC
 // #define DEBUG
 
 /**
@@ -115,3 +116,42 @@ void savePreferenceToTag(const String &payload) {
     message.addTextRecord(payload);
     nfcAdapter.write(message);
 }
+
+bool tagPresent() {
+    return nfcAdapter.tagPresent();
+}
+
+#else
+/**
+ * NFC related variables and functions
+ */
+
+void setupNfc() {
+    printHeading("FakeNFC");
+    Serial.println("FakeNFC setupNFC: Initializing NFC reader!");
+}
+
+NfcTag readAndPrintId() {
+    Serial.println("FakeNFC readAndPrintId");
+    NdefMessage message = NdefMessage();
+    message.addTextRecord("fakepayload");
+    byte uid = 100;
+    NfcTag tag = NfcTag(&uid, sizeof(uid), "Unknown", message);
+    Serial.print("FAKEUID:");
+    Serial.println(tag.getUidString());
+    return tag;
+}
+
+String getTagContent(NfcTag&tag) {
+    printHeading("FakeNFC getTagContent");
+    return "fakeContent";
+}
+
+
+void savePreferenceToTag(const String &payload) {
+}
+
+bool tagPresent() {
+    return true;
+}
+#endif

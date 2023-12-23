@@ -18,5 +18,6 @@ void setupNfc();
 NfcTag readAndPrintId();
 String getTagContent(NfcTag &tag);
 void savePreferenceToTag(const String &payload);
+bool tagPresent();
 
 #endif //NFCWRAPPER_H
