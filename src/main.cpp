@@ -26,6 +26,7 @@ void loop() {
             if (onlineMode) {
                 // get preference from server
                 const String uid = tag.getUidString();
+                const String preferenceString = getPreferenceFromServer(uid);
             }
             else {
                 // get preference from tag

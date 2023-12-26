@@ -4,9 +4,9 @@
 
 #include "WifiWrapper.h"
 
-#include <Helpers.h>
+#include "Helpers.h"
 
-#define WIFI_MAX_ATTEMPTS 1
+#define WIFI_MAX_ATTEMPTS 2
 
 /**
  * WiFi related variables and functions
@@ -14,6 +14,8 @@
 int status = WL_IDLE_STATUS;
 char ssid[] = SECRET_SSID; // Both the SSID and PASS are loaded from an external file (arduino_secrets.h)
 char pass[] = SECRET_PASS;
+IPAddress server(SERVER_IP);
+WiFiClient client;
 
 void printWifiStatus() {
     // print the SSID of the network you're attached to:
@@ -28,7 +30,7 @@ void printWifiStatus() {
 
     // print the received signal strength:
     long rssi = WiFi.RSSI();
-    Serial.print("signal strength (RSSI): ");
+    Serial.print("Signal Strength (RSSI): ");
     Serial.print(rssi);
     Serial.println(" dBm");
     ansi.normal();
@@ -45,7 +47,7 @@ void setupWifi() {
         while (true);
     }
 
-    if (String fv = WiFi.firmwareVersion(); fv < WIFI_FIRMWARE_LATEST_VERSION) {
+    if (String fv = CWifi::firmwareVersion(); fv < WIFI_FIRMWARE_LATEST_VERSION) {
         Serial.println("Please upgrade the firmware");
     }
 
@@ -82,4 +84,36 @@ void setupWifi() {
 
 int isConnected() {
     return WiFi.status() == WL_CONNECTED;
+}
+
+String getPreferenceFromServer(const String &uid) {
+    printColored("Fetching from Server", ANSI::green);
+    if(!client.connect(server, SERVER_PORT)){
+        return "99";
+    }
+    client.println("GET /search?q=arduino HTTP/1.1");
+    client.println("Host: drinkserver.io");
+    client.println("Connection: close");
+    client.println();
+    uint32_t received_data_num = 0;
+    printColored("PrintingDATA:", ANSI::green);
+
+    while (client.available()) {
+        /* actual data reception */
+        char c = client.read();
+        /* print data to serial port */
+        Serial.print(c);
+        /* wrap data to 80 columns */
+        received_data_num++;
+        if(received_data_num % 80 == 0) {
+            Serial.println();
+        }
+    }
+    printColored("DataPrintFinished:", ANSI::green);
+
+    return "";
+}
+
+void reportSpendAmountToServer(const String &uid, int amount) {
+    //TODO: report spent amount to server
 }
