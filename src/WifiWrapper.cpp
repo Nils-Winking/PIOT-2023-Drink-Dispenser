@@ -19,7 +19,8 @@ char pass[] = SECRET_PASS;
 IPAddress server(SERVER_IP);
 WiFiClient client;
 
-void printWifiStatus() {
+void printWifiStatus()
+{
     // print the SSID of the network you're attached to:
     ansi.foreground(ANSI::cyan);
     Serial.print("                  SSID: ");
@@ -38,18 +39,21 @@ void printWifiStatus() {
     ansi.normal();
 }
 
-void setupWifi() {
+void setupWifi()
+{
     printHeading("WiFi");
     Serial.println("Initializing WiFi!");
     delay(1000);
     // check for the WiFi module:
-    if (WiFi.status() == WL_NO_MODULE) {
+    if (WiFi.status() == WL_NO_MODULE)
+    {
         Serial.println("Communication with WiFi module failed!");
         // don't continue
         while (true);
     }
 
-    if (String fv = CWifi::firmwareVersion(); fv < WIFI_FIRMWARE_LATEST_VERSION) {
+    if (String fv = CWifi::firmwareVersion(); fv < WIFI_FIRMWARE_LATEST_VERSION)
+    {
         Serial.println("Please upgrade the firmware");
     }
 
@@ -60,61 +64,76 @@ void setupWifi() {
 
     // attempt to connect to WiFi network:
 #ifdef forceConnection
-    while (status != WL_CONNECTED) {
+    while (status != WL_CONNECTED)
+    {
 #else
         while (connectionAttempts < WIFI_MAX_ATTEMPTS && status != WL_CONNECTED) {
 #endif
         uint8_t status1 = WiFi.status();
-        if (status1 == WL_CONNECTED) {
+        if (status1 == WL_CONNECTED)
+        {
             Serial.print("f1");
         }
-        if (status1 == WL_CONNECT_FAILED) {
+        if (status1 == WL_CONNECT_FAILED)
+        {
             Serial.print("f2");
         }
-        if (status1 == WL_CONNECTION_LOST) {
+        if (status1 == WL_CONNECTION_LOST)
+        {
             Serial.print("f3");
         }
-        if (status1 == WL_DISCONNECTED){
+        if (status1 == WL_DISCONNECTED)
+        {
             Serial.print("f4");
         }
-        if (status1 == WL_NO_SSID_AVAIL){
+        if (status1 == WL_NO_SSID_AVAIL)
+        {
             Serial.print("f5");
         }
 
-        if (status1 == WL_AP_CONNECTED){
+        if (status1 == WL_AP_CONNECTED)
+        {
             Serial.print("f6");
         }
 
-        if (status1 == WL_AP_FAILED){
+        if (status1 == WL_AP_FAILED)
+        {
             Serial.print("f7");
         }
 
-        if (status1 == WL_AP_LISTENING){
+        if (status1 == WL_AP_LISTENING)
+        {
             Serial.print("f8");
         }
 
-        if (status1 == WL_IDLE_STATUS){
+        if (status1 == WL_IDLE_STATUS)
+        {
             Serial.print("f9");
         }
 
-        if (status1 == WL_NO_MODULE){
+        if (status1 == WL_NO_MODULE)
+        {
             Serial.print("f10");
         }
 
-        if (status1 == WL_NO_SHIELD){
+        if (status1 == WL_NO_SHIELD)
+        {
             Serial.print("f11");
         }
 
-        if (status1 == WL_SCAN_COMPLETED){
+        if (status1 == WL_SCAN_COMPLETED)
+        {
             Serial.print("f12");
         }
         Serial.print(".");
         connectionAttempts++;
         // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
-        status = WiFi.begin(ssid);
+        status = WiFi.begin(ssid, pass);
+        delay(10000);
     }
     Serial.println();
-    if (connectionAttempts == WIFI_MAX_ATTEMPTS && status != WL_CONNECTED) {
+    if (connectionAttempts == WIFI_MAX_ATTEMPTS && status != WL_CONNECTED)
+    {
         ansi.color(ANSI::white, ANSI::red);
         ansi.bold();
         Serial.println("Failed to connect to WiFi!");
@@ -122,45 +141,68 @@ void setupWifi() {
         ansi.normal();
         ansi.clearLine();
         Serial.println();
-    } else {
+    }
+    else
+    {
         printWifiStatus();
     }
 }
 
 
-int isConnected() {
+int isConnected()
+{
     return WiFi.status() == WL_CONNECTED;
 }
 
-String getPreferenceFromServer(const String &uid) {
+String getPreferenceFromServer(const String& uid)
+{
     printColored("Fetching from Server", ANSI::green);
-    if (!client.connect(server, SERVER_PORT)) {
+    client.stop();
+    if (!client.connect(server, SERVER_PORT))
+    {
         printColored("Could not connect to server", ANSI::red);
         return "99";
     }
-    client.println("GET /search?q=arduino HTTP/1.1");
+    client.print("GET /api/preference?uid=");
+    client.print(uid);
+    client.println(" HTTP/1.1");
     client.println("Host: drinkserver.io");
+    client.println("User-Agent: ArduinoWiFi/1.1");
+    client.println("Accept: application/json");
+    client.println("Accept-Encoding: identity");
     client.println("Connection: close");
     client.println();
     uint32_t received_data_num = 0;
     printColored("PrintingDATA:", ANSI::blue);
-
-    while (client.available()) {
-        /* actual data reception */
-        char c = client.read();
-        /* print data to serial port */
-        Serial.print(c);
-        /* wrap data to 80 columns */
-        received_data_num++;
-        if (received_data_num % 80 == 0) {
-            Serial.println();
+    String response;
+    while (client.connected())
+    {
+        delay(100);
+        while (client.available())
+        {
+            /* actual data reception */
+            char c = client.read();
+            response.concat(c);
+            /* print data to serial port */
+            // Serial.print(c);
+            /* wrap data to 80 columns*/
+            received_data_num++;
+            // if (received_data_num % 80 == 0)
+            // {
+            //     Serial.println();
+            // }
         }
     }
-    printColored("DataPrintFinished:", ANSI::blue);
+    // printColored("DataPrintFinished:", ANSI::blue);
+    const char* r = response.c_str();
+    const char* content = strstr(response.c_str(), "\r\n\r\n") + 4;
+    // Serial.println(content);
+    client.stop();
 
-    return "";
+    return content;
 }
 
-void reportSpendAmountToServer(const String &uid, int amount) {
+void reportSpendAmountToServer(const String& uid, int amount)
+{
     //TODO: report spent amount to server
 }

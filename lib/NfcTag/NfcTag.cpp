@@ -75,10 +75,10 @@ String NfcTag::getUidString()
     String uidString = "";
     for (int i = 0; i < _uidLength; i++)
     {
-        if (i > 0)
-        {
-            uidString += " ";
-        }
+        // if (i > 0)
+        // {
+        //     uidString += " ";
+        // }
 
         if (_uid[i] < 0xF)
         {
