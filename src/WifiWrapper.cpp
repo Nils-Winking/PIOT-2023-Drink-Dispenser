@@ -65,7 +65,7 @@ void setupWifi() {
         delay(10000);
     }
         Serial.println();
-    if (connectionAttempts == WIFI_MAX_ATTEMPTS) {
+    if (status != WL_CONNECTED) {
         ansi.color(ANSI::white, ANSI::red);
         ansi.bold();
         Serial.println("Failed to connect to WiFi!");
