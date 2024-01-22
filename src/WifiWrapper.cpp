@@ -10,6 +10,8 @@
 
 #define forceConnection
 
+#ifndef fakeWIFI
+
 /**
  * WiFi related variables and functions
  */
@@ -206,3 +208,35 @@ void reportSpendAmountToServer(const String& uid, int amount)
 {
     //TODO: report spent amount to server
 }
+
+#else
+
+void printWifiStatus()
+{
+    Serial.println("FakeWifi Status");
+}
+
+void setupWifi() {
+    printHeading("FakeWiFi");
+    Serial.println("Initializing FakeWiFi!");
+}
+
+void reportSpendAmountToServer(const String& uid, int amount)
+{
+    Serial.print("FakeWifi amount: UID: ");
+    Serial.print(uid);
+    Serial.print(" Amount: ");
+    Serial.println(amount);
+}
+
+int isConnected() {
+    return true;
+}
+
+String getPreferenceFromServer(const String &uid) {
+    Serial.print("FakeWifi getPreference: UID: ");
+    Serial.println(uid);
+    return "1_1:23_11:40_12:37";
+}
+
+#endif

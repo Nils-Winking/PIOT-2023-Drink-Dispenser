@@ -6,6 +6,7 @@
 #include "Helpers.h"
 #include "NfcWrapper.h"
 #include "WifiWrapper.h"
+#include "Preference.h"
 
 bool waiting_for_cup = true;
 
@@ -40,6 +41,17 @@ void loop()
                 preferenceString = getTagContent(tag);
             }
             Serial.println(preferenceString);
+            auto preference = new Preference(preferenceString);
+            Serial.print("Preference Parsed with ");
+            Serial.print(preference->getIngredientCount());
+            Serial.println(" ingredients");
+            for (int i = 0; i < preference->getIngredientCount(); ++i){
+                Serial.print("Ingredient ID: ");
+                Serial.print(preference->getIngredient(i).getId());
+                Serial.print(" Percentage: ");
+                Serial.println(preference->getIngredient(i).getAmount());
+            }
+
             while (true)
             {
                 // pour drink

@@ -5,17 +5,19 @@
 #ifndef PIOT_2023_DRINK_DISPENSER_INGREDIENT_H
 #define PIOT_2023_DRINK_DISPENSER_INGREDIENT_H
 
+#include <Arduino.h>
 
 class Ingredient {
 public:
-    Ingredient(int id, int amount);
+    Ingredient();
 
+    Ingredient(int id, int amount);
     int getId();
     int getAmount();
 
 private:
-    int id;
-    int amount;
+    int id{};
+    int amount{};
 };
 
 

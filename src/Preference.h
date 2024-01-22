@@ -5,17 +5,20 @@
 #define PIOT_2023_DRINK_DISPENSER_PREFERENCE_H
 
 #include "Ingredient.h"
+#include <Arduino.h>
+
+#define maxIngredients 10
 
 class Preference {
 public:
-    Preference(Ingredient *ingredient, int count);
-
+    explicit Preference(const String &fromString);
     Ingredient getIngredient(int index);
     int getIngredientCount();
 private:
-    Ingredient *ingredients;
     int ingredientCount;
+    Ingredient ingredients[maxIngredients];
 };
 
+bool isValidAndSet(const String &preferenceString);
 
 #endif //PIOT_2023_DRINK_DISPENSER_PREFERENCE_H

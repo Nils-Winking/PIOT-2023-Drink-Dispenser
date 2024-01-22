@@ -13,3 +13,5 @@ int Ingredient::getId() {
 }
 
 Ingredient::Ingredient(int id, int amount) : id(id), amount(amount) {}
+
+Ingredient::Ingredient() = default;

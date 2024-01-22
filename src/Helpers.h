@@ -2,11 +2,10 @@
 // Created by Nils on 22/11/2023.
 //
 
-// #define fakeNFC
-
 #ifndef HELPERS_H
 #define HELPERS_H
 
+#include "arduino_secrets.h"
 #include <Arduino.h>
 #include <ansi.h>
 
