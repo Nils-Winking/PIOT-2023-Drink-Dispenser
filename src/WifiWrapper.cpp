@@ -10,6 +10,8 @@
 
 #define forceConnection
 
+#define fakeWIFI
+
 #ifndef fakeWIFI
 
 /**
@@ -236,7 +238,7 @@ int isConnected() {
 String getPreferenceFromServer(const String &uid) {
     Serial.print("FakeWifi getPreference: UID: ");
     Serial.println(uid);
-    return "1_1:23_11:40_12:37";
+    return "1_1:50_11:50";
 }
 
 #endif
