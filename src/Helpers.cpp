@@ -48,7 +48,7 @@ void printHeading(const char heading[]) {
 }
 
 void printColored(const String& text, uint8_t fgcolor) {
-    ansi.foreground(ANSI::green);
+    ansi.foreground(fgcolor);
     Serial.print(text);
     ansi.normal();
     ansi.clearLine();
