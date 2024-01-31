@@ -3,14 +3,13 @@
 //
 
 #include "WifiWrapper.h"
-
 #include "Helpers.h"
 
 #define WIFI_MAX_ATTEMPTS 2
 
 #define forceConnection
 
-#define fakeWIFI
+// #define fakeWIFI
 
 #ifndef fakeWIFI
 
@@ -25,6 +24,8 @@ WiFiClient client;
 
 void printWifiStatus()
 {
+    char l1[16];
+    char l2[16];
     // print the SSID of the network you're attached to:
     ansi.foreground(ANSI::cyan);
     Serial.print("                  SSID: ");
@@ -41,6 +42,18 @@ void printWifiStatus()
     Serial.print(rssi);
     Serial.println(" dBm");
     ansi.normal();
+
+    sprintf(l1, "SSID: %s", WiFi.SSID());
+    sprintf(l2, "");
+    lcd_print(l1, l2);
+    sprintf(l1, "IP:");
+    sprintf(l2, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+    delay(1000);
+    lcd_print(l1, l2);
+    sprintf(l1, "RSSI: %d dBm", rssi);
+    sprintf(l2, "");
+    delay(1000);
+    lcd_print(l1, l2);
 }
 
 void setupWifi()
@@ -77,6 +90,7 @@ void setupWifi()
         if (status1 == WL_CONNECTED)
         {
             Serial.print("f1");
+            break;
         }
         if (status1 == WL_CONNECT_FAILED)
         {
@@ -162,7 +176,7 @@ String getPreferenceFromServer(const String& uid)
 {
     printColored("Fetching from Server", ANSI::green);
     client.stop();
-    if (!client.connect(server, SERVER_PORT))
+    if (!client.connect(SERVER_IP, SERVER_PORT))
     {
         printColored("Could not connect to server", ANSI::red);
         return "99";
@@ -170,14 +184,14 @@ String getPreferenceFromServer(const String& uid)
     client.print("GET /api/preference?uid=");
     client.print(uid);
     client.println(" HTTP/1.1");
-    client.println("Host: drinkserver.io");
-    client.println("User-Agent: ArduinoWiFi/1.1");
+    client.println("Host: piot.swinki.ddnss.de");
+    client.println("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/122.0");
     client.println("Accept: application/json");
     client.println("Accept-Encoding: identity");
     client.println("Connection: close");
     client.println();
     uint32_t received_data_num = 0;
-    printColored("PrintingDATA:", ANSI::blue);
+    // printColored("PrintingDATA:", ANSI::blue);
     String response;
     while (client.connected())
     {

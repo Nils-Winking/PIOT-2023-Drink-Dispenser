@@ -11,6 +11,7 @@
 #include <WiFiS3.h>
 #include "Ingredient.h"
 #include "Preference.h"
+#include "DisplayWrapper.h"
 
 void printWifiStatus();
 void setupWifi();

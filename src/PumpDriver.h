@@ -12,6 +12,7 @@ class PumpDriver
 public:
     explicit PumpDriver();
     explicit PumpDriver(int pin1, int pin2);
+    explicit PumpDriver(int pin1);
     void stop() const;
     /**
      * \brief Sets the pump to run forward by setting pin1 to HIGH
